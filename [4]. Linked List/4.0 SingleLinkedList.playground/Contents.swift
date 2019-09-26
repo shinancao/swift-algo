@@ -71,7 +71,7 @@ class List<Element: Equatable> : CustomStringConvertible {
     }
     
     /// 将value值插入到第一个结点
-    /// - return
+    /// - returns: Node<Element> 返回新插入的结点
     func insertToHead(value: Element) -> Node<Element> {
         let newNode = Node(value: value)
         insertToHead(node: newNode)

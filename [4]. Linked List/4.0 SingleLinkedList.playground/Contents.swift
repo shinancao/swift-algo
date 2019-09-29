@@ -85,28 +85,28 @@ class List<Element: Equatable> : CustomStringConvertible {
         return node
     }
     
-    /// 在给定结点后插入
+    /// 在给定值后插入
     func insert(after node: Node<Element>, newValue: Element) -> Node<Element> {
         let newNode = Node(value: newValue)
         insert(after: node, newNode: newNode)
         return newNode
     }
     
-    /// 在给定值后插入
+    /// 在给定结点后插入
     func insert(after node: Node<Element>, newNode: Node<Element>) -> Node<Element>{
         newNode.next = node.next
         node.next = newNode
         return newNode
     }
     
-    /// 在给定结点前插入
+    /// 在给定值前插入
     func insert(before node: Node<Element>, newValue: Element) -> Node<Element> {
         let newNode = Node(value: newValue)
         insert(before: node, newNode: newNode)
         return newNode
     }
     
-    /// 在给定值前插入
+    /// 在给定结点前插入
     func insert(before node: Node<Element>, newNode: Node<Element>) -> Node<Element> {
         var lastNode = dummy
         var tmpNode = dummy.next

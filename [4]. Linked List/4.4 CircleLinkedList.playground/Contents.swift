@@ -167,4 +167,6 @@ for i in 2 ... 5 {
 print(list)
 node = list.insert(before: node, newValue: 6)
 print(list)
-print(list.tail)
+print(list.tail.next)
+list.delete(node: node)
+print(list)

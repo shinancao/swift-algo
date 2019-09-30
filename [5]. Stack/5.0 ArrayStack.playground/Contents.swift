@@ -6,7 +6,7 @@ struct ArrayStack<Element> {
     private var data: [Element]
     /// 定义栈的最大长度
     private var capacity = 0
-    // 定义栈里实际的元素个数
+    /// 定义栈里实际的元素个数
     private var count = 0
     /// 判断栈是否为空
     var isEmpty: Bool {

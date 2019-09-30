@@ -47,7 +47,7 @@ struct ArrayStack<Element> {
     }
     
     func printAll() {
-        print("[", terminator: "")
+        print("[ ", terminator: "")
         for i in (0 ..< count).reversed() {
             print("\(data[i]) ", terminator: "")
         }

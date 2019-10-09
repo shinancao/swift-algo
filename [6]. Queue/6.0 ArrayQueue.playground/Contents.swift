@@ -74,7 +74,7 @@ struct ArrayQueue<Element> {
     
     func printAll() {
         print("[ ", terminator: "")
-        for i in (head ..< tail).reversed() {
+        for i in (head ..< tail) {
             print("\(data[i]) ", terminator: "")
         }
         print("]")

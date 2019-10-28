@@ -1,5 +1,7 @@
 import Foundation
-
+/// 实现一个用链表法解决散列冲突的散列表
+/// 插入的时间复杂度为O(1)
+/// 对于散列均匀的散列表来说，查找和删除的时间复杂度为O(k)，k=n/m，n为散列表中数据的个数，m为“槽”的个数
 class Node<Key: Hashable, Value> {
     var key: Key?
     var value: Value?
@@ -16,18 +18,18 @@ class Node<Key: Hashable, Value> {
 }
 
 class HashTable<Key: Hashable, Value>: CustomStringConvertible {
-    // 装载因子
-    private let loadFactor = 0.75
-    // 已经使用的个数，超过loadFactor*capacity进行扩容
-    private var use = 0
     private var table: [Node<Key, Value>]
+    /// 记录table已经使用的个数，以便进行扩容
+    private var use = 0
     
-    init() {
+    convenience init() {
+        self.init(capacity: 8)
+    }
+    
+    init(capacity: Int) {
         // 千万不能这样初始化table，Node是引用类型，这会导致数组中每个位置指向的都是同一个Node
-//        table = [Node<Key, Value>](repeating: Node<Key, Value>(), count: capacity)
+        //        table = [Node<Key, Value>](repeating: Node<Key, Value>(), count: capacity)
         table = [Node<Key, Value>]()
-        // 散列表默认大小
-        let capacity = 8
         for _ in 0 ..< capacity {
             // 默认添加哨兵结点
             table.append(Node<Key, Value>())
@@ -62,8 +64,8 @@ class HashTable<Key: Hashable, Value>: CustomStringConvertible {
             // 该位置还没有放元素，创建一个新的放于此处
             table[index].next = Node(key: key, value: value, next: nil)
             use += 1
-            if Double(use) >= Double(table.count) * loadFactor {
-                
+            if use >= table.count * 3 / 4 {
+                resize()
             }
         } else {
             // 使用链表法解决散列冲突

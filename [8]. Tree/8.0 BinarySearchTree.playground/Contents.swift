@@ -146,22 +146,23 @@ class BinarySearchTree {
         }
     }
     
+    // 中序打印出的是有序的结点序列
     private func inOrder(_ node: Node<Int>) {
         if let left = node.left {
-            preOrder(left)
+            inOrder(left)
         }
         print(node)
         if let right = node.right {
-            preOrder(right)
+            inOrder(right)
         }
     }
     
     private func postOrder(_ node: Node<Int>) {
         if let left = node.left {
-            preOrder(left)
+            postOrder(left)
         }
         if let right = node.right {
-            preOrder(right)
+            postOrder(right)
         }
         print(node)
     }
@@ -178,10 +179,10 @@ class BinarySearchTree {
             let tmp = queue[p]
             print(tmp)
             if let left = tmp.left {
-                queue.insert(left, at: 0)
+                queue.append(left)
             }
             if let right = tmp.right {
-                queue.insert(right, at: 0)
+                queue.append(right)
             }
             p += 1
         }
@@ -195,12 +196,12 @@ arr.forEach { (i) in
 }
 //print("preOrder:")
 //bTree.printAll(withType: .pre)
-//print("midOrder:")
-//bTree.printAll(withType: .mid)
+print("midOrder:")
+bTree.printAll(withType: .mid)
 //print("postOrder:")
 //bTree.printAll(withType: .post)
-print("levelOrder:")
-bTree.printAll(withType: .level)
+//print("levelOrder:")
+//bTree.printAll(withType: .level)
 //bTree.delete(16)
 //bTree.delete(25)
 //bTree.delete(18)

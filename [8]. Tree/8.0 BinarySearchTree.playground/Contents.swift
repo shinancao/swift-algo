@@ -121,7 +121,7 @@ class BinarySearchTree {
     }
     
     public func printAll(withType type: OrderType) {
-        guard tree != nil, let aTree = tree else {
+        guard let aTree = tree else {
             return
         }
         switch type {
@@ -167,23 +167,23 @@ class BinarySearchTree {
     }
     
     private func levelOrder(_ node: Node<Int>) {
-        guard let aTree = tree else {
-            return
-        }
         // 用一个数组模拟队列，将新元素插在0位置，从最后面取
         var queue = [Node<Int>]()
+        // 指向当前正在访问的结点，从数组前面开始遍历
+        var p = 0
         // 先将根结点放入队列
-        queue.append(aTree)
+        queue.append(node)
         // 遍历queue，每次pop出一个元素打印，再把它的左右子结点放入队列
-        while queue.count > 0 {
-            let node = queue.popLast()!
-            print(node)
-            if let left = node.left {
+        while p < queue.count {
+            let tmp = queue[p]
+            print(tmp)
+            if let left = tmp.left {
                 queue.insert(left, at: 0)
             }
-            if let right = node.right {
+            if let right = tmp.right {
                 queue.insert(right, at: 0)
             }
+            p += 1
         }
     }
 }

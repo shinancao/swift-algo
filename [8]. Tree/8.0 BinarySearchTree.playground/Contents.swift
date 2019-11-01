@@ -112,7 +112,7 @@ class BinarySearchTree {
         if pp == nil {
             // 要删除的结点是根结点
             tree = child
-        } else if pp!.left != nil && pp!.left!.value == p!.value {
+        } else if pp?.left === p {
             // 将child挂在父结点的左边
             pp!.left = child
         } else {

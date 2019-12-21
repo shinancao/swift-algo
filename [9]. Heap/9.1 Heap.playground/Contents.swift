@@ -1,105 +1,175 @@
 import Foundation
-/// 要搞清楚一个数据结构，首先要搞清楚该数据结构可以用哪种方式存储，数组或链表，它都支持哪些操作。
-/// 然后是时间/空间复杂度，还有适用的场合
-public class Heap<T: Comparable> {
-    /// 存储堆中数据，从1开始，0位置空出，以便后面索引好计算
-    private var data: [T]
-    /// 堆中当前的元素个数
-    private var count = 0
+
+public struct Heap<T> {
+    /// 用来存储堆中的结点
+    private(set) var array = [T]()
+    /// 结点之间比较大小的函数
+    /// 传'>'则构建大顶堆，传'<'则构建小顶堆
+    /// 对于自定义的对象，也可以为其他比较方式
+    private var orderFn: (T, T) -> Bool
     
-    init(array: [T]) {
-        precondition(array.count > 0)
-        data = [T]()
-        // 用来占位置0
-        data.append(array[0])
-        data.append(contentsOf: array)
-        count = array.count
-        // 将array中的元素对应成完全二叉树，则从count/2的位置开始向后都是叶子结点，所以从count/2开始逐渐向前取元素，向下找到其所属的位置
-        // 该方式建队的时间复杂度是O(n)
-        for i in (1 ... count/2).reversed() {
-            heapify(n: count, i: i)
+    /// 初始化一个空的堆
+    /// - parameter sort: 根据sort决定构造的是大顶堆还是小顶堆
+    public init(sort: @escaping (T, T) -> Bool) {
+        self.orderFn = sort
+    }
+    
+    /// 用给定的数组初始化一个堆
+    public init(array: [T], sort: @escaping (T, T) -> Bool) {
+        self.orderFn = sort
+        configureHeap(from: array)
+    }
+    
+    /// 用给定的数组从上向下堆化
+    /// 时间复杂度：O(n)
+    private mutating func configureHeap(from array: [T]) {
+        self.array = array
+        // 从n/2到n-1为叶子结点
+        // 叶子结点不需要向下堆化了，所以向下堆化从n/2-1开始，逐渐向上直到0
+        for i in stride(from: (self.array.count/2-1), through: 0, by: -1) {
+            shiftDown(i)
         }
     }
     
-    /// 构造大顶堆
-    /// 自下向上堆化，将待确定位置的元素放到树的最右边，也就是数组的最后，然后往上找到其合适的位置
-    /// 时间复杂度O(logn)
-    public func insert(_ item: T) {
-        count += 1
-        data.append(item)
-        var i = count
-        while i/2 > 0 && data[i/2] < data[i] {
-            let tmp = data[i]
-            data[i] = data[i/2]
-            data[i/2] = tmp
-            i = i/2
+    public var isEmpty: Bool {
+        return array.isEmpty
+    }
+    
+    public var count: Int {
+        return array.count
+    }
+    
+    /// 获取堆中的最大值或最小值
+    public var peek: T? {
+        return array.first
+    }
+    
+    /// 向堆中插入一个元素，并保持堆的特性
+    public mutating func insert(_ value: T) {
+        // 将元素先放到数组的最后
+        array.append(value)
+        // 从下向上进行堆化，找到该元素合适的位置
+        shiftUp(array.count - 1)
+    }
+    
+    /// 向堆中插入一个序列片段，该序列中的元素类型要与堆中的一致
+    public mutating func insert<S: Sequence>(_ sequence: S) where S.Iterator.Element == T {
+        for value in sequence {
+            insert(value)
         }
     }
     
-    public func removeMax() {
-        guard count > 0 else {
+    /// 用给定的元素替换堆中指定位置的元素
+    public mutating func replace(index i: Int, value: T) {
+        guard i < array.count else { return }
+        
+        remove(at: i)
+        insert(value)
+    }
+    
+    /// 删除堆顶元素，并保持堆的特性
+    @discardableResult public mutating func removeRoot() -> T? {
+        guard !array.isEmpty else { return nil }
+        
+        if array.count == 1 {
+            return array.removeLast()
+        } else {
+            // 将堆中最后一个元素放到堆顶位置
+            // 再从上向下进行堆化，找到被放到堆顶的这个元素合适的位置
+            let value = array[0]
+            array[0] = array.removeLast()
+            shiftDown(0)
+            return value
+        }
+    }
+    
+    /// 删除堆中指定位置的元素
+    @discardableResult public mutating func remove(at index: Int) -> T? {
+        guard index < array.count else { return nil }
+        
+        let size = array.count - 1
+        if index != size {
+            // 交换堆中最后一个元素和index位置的元素
+            array.swapAt(index, size)
+            // 从index开始向下找到
+            shiftDown(from: index, until: size)
+            shiftUp(index)
+        }
+        return array.removeLast()
+    }
+    
+    internal func parentIndex(ofIndex i: Int) -> Int {
+        return (i - 1) / 2
+    }
+    
+    internal func leftChildIndex(ofIndex i: Int) -> Int {
+        return 2*i + 1
+    }
+    
+    internal func rightChildIndex(ofIndex i: Int) -> Int {
+        return 2*i + 2
+    }
+    
+    /// 从指定位置开始，比较其与父结点的值，进行交换z，直到堆顶
+    /// 时间复杂度：O(logn)
+    internal mutating func shiftUp(_ index: Int) {
+        var childIndex = index
+        let child = array[childIndex]
+        var parentIndex = self.parentIndex(ofIndex: index)
+        
+        while childIndex > 0 && orderFn(child, array[parentIndex]) {
+            // 这里没有直接赋值，而只移动了childIndex的位置，等while结束后，一次赋值
+            array[childIndex] = array[parentIndex]
+            childIndex = parentIndex
+            parentIndex = self.parentIndex(ofIndex: childIndex)
+        }
+        
+        array[childIndex] = child
+    }
+    
+    /// 递归方法
+    /// 从index开始，与其左右结点比较，然后交换，直到endIndex
+    /// 时间复杂度：O(logn)
+    internal mutating func shiftDown(from index: Int, until endIndex: Int) {
+        let leftChildIndex = self.leftChildIndex(ofIndex: index)
+        let rightChildIndex = leftChildIndex + 1
+        
+        var first = index
+        if leftChildIndex < endIndex && orderFn(array[leftChildIndex], array[first]) {
+            first = leftChildIndex
+        }
+        if rightChildIndex < endIndex && orderFn(array[rightChildIndex], array[first]) {
+            first = rightChildIndex
+        }
+        if first == index {
             return
         }
-        data[1] = data[count]
-        count -= 1
-        heapify(n: count, i: 1)
+        
+        array.swapAt(index, first)
+        shiftDown(from: first, until: endIndex)
     }
     
-    /// 把第一个元素交换到最后的位置，然后重新将最后一个元素前面的堆化O(nlogn)
-    /// 排序的时间复杂度为O()
-    public func sort() {
-        var k = count
-        while k > 1 {
-            let tmp = data[1]
-            data[1] = data[k]
-            data[k] = tmp
-            k -= 1
-            heapify(n: k, i: 1)
-        }
-    }
-    
-    /// 自上向下堆化，删除堆顶元素（数组中位置为1的元素），把最后一个元素放到堆顶，然后从上往下确定该元素合适的位置
-    /// 堆化的时间复杂度为O(n)
-    private func heapify(n: Int, i: Int) {
-        var i = i
-        while true {
-            var maxPos = i
-            // i位置元素与其左结点比较
-            if 2*i <= n && data[i] < data[2*i] {
-                maxPos = 2*i
-            }
-            // 左结点与右结点比较
-            if 2*i+1 <= n && data[2*i] < data[2*i+1] {
-                maxPos = 2*i+1
-            }
-            // 如果maxPos没有改变，则元素已经处于合适的位置
-            if maxPos == i {
-                break
-            }
-            let tmp = data[i]
-            data[i] = data[maxPos]
-            data[maxPos] = tmp
-            i = maxPos
-        }
+    /// 从index开始向下堆化，直到最后一个元素
+    internal mutating func shiftDown(_ index: Int) {
+        shiftDown(from: index, until: array.count)
     }
 }
 
 extension Heap: CustomStringConvertible {
     public var description: String {
-        guard count > 0 else {
-            return ""
-        }
-        let range = 1...count
-        let subArray = data[range]
-        return subArray.description
+        return array.description
     }
 }
 
-let array = [1, 2, 5, 6, 7, 8, 9, 13, 15, 16, 17, 21, 33]
-let heap = Heap(array: array)
-heap.insert(11)
-print(heap)
-heap.removeMax()
-print(heap)
-heap.sort()
-print(heap)
+var minHeap = Heap<Int>(sort: <)
+let array = [55, 26, 17, 48, 39, 13, 15, 16, 17, 21, 33]
+minHeap.insert(array)
+print(minHeap)
+var maxHeap = Heap<Int>(array: array, sort: >)
+print(maxHeap)
+maxHeap.removeRoot()
+print(maxHeap)
+maxHeap.remove(at: 1)
+print(maxHeap)
+
+

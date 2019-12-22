@@ -2,7 +2,7 @@ import Foundation
 
 public struct Heap<T> {
     /// 用来存储堆中的结点
-    private(set) var array = [T]()
+    var array = [T]()
     /// 结点之间比较大小的函数
     /// 传'>'则构建大顶堆，传'<'则构建小顶堆
     /// 对于自定义的对象，也可以为其他比较方式

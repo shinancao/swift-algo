@@ -64,7 +64,7 @@ extension BinarySearchTree: CustomStringConvertible {
     }
 }
 
-// MARK: Test Cases
+// MARK: - Test Cases
 
 var tree = BinarySearchTree.leaf(7)
 tree = tree.insert(2)

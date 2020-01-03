@@ -50,7 +50,7 @@ extension BinaryTree: CustomStringConvertible {
     }
 }
 
-// MARK: Test Cases
+// MARK: - Test Cases
 
 // 比如我们要构造这样一个树，这是一个表达式(5 * (a - 10)) + (-4 * (3 / b))
 /**

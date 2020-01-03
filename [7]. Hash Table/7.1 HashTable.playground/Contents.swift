@@ -106,7 +106,7 @@ extension HashTable: CustomStringConvertible {
 }
 
 
-//MARK - Test Cases
+// MARK: - Test Cases
 
 var hashTable = HashTable<String, String>(capacity: 5)
 

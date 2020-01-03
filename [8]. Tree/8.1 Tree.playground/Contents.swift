@@ -56,7 +56,7 @@ extension TreeNode where T: Equatable {
     }
 }
 
-// MARK: Test Cases
+// MARK: - Test Cases
 let tree = TreeNode<String>(value: "beverages")
 
 let hotNode = TreeNode<String>(value: "hot")

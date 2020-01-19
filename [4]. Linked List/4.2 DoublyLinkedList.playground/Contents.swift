@@ -1,23 +1,23 @@
 import Foundation
 
+/// 实现一个双向非循环链表
 public final class LinkedList<T> {
     /// 定义链表中的结点结构
     public class LinkedListNode<T> {
         var value: T
         var next: LinkedListNode?
+        /// 指向前面的结点
+        weak var prev: LinkedListNode?
         
         public init(value: T) {
             self.value = value
         }
     }
     
-    /// 为结点起一个别名，以提高代码的可读性
     public typealias Node = LinkedListNode<T>
     
-    /// 链表的头结点，存储有效的结点值
     private(set) var head: Node?
     
-    /// 遍历链表，拿到最后一个结点
     public var last: Node? {
         guard var node = head else {
             return nil
@@ -29,12 +29,10 @@ public final class LinkedList<T> {
         return node
     }
     
-    /// 判断链表是否为空
     public var isEmpty: Bool {
         return head == nil
     }
     
-    /// 遍历链表，以统计结点的个数
     public var count: Int {
         guard var node = head else {
             return 0
@@ -56,13 +54,14 @@ public final class LinkedList<T> {
     }
     
     public func node(at index: Int) -> Node {
-        precondition(head != nil, "List is empty")
+        precondition(!isEmpty, "List is empty")
         precondition(index >= 0, "index must be greater than 0")
         
         var node = head
+        // 用来计数已经遍历过的结点个数
         var num = 0
         while let nd = node {
-            if num == index {
+            if (index == num) {
                 break
             }
             num += 1
@@ -70,76 +69,76 @@ public final class LinkedList<T> {
         }
         
         precondition(node != nil, "index is out of bounds.")
-        
         return node!
     }
     
     public func append(_ value: T) {
-        let newNode = Node(value: value)
-        append(newNode)
+        let node = LinkedListNode(value: value)
+        append(node)
     }
-    
     public func append(_ node: Node) {
+        // 插在链表的最后
         let newNode = node
         if let lastNode = last {
             lastNode.next = newNode
+            newNode.prev = lastNode
         } else {
             head = newNode
         }
     }
-    
     public func append(_ list: LinkedList) {
-        var nodeToCopy = list.head
-        while let node = nodeToCopy {
-            append(node.value)
-            nodeToCopy = node.next
+        // 取list中的每一个值，构造node，再插入到当前链表中
+        var node = list.head
+        while let nd = node {
+            append(nd.value)
+            node = nd.next
         }
     }
-    
     public func insert(_ value: T, at index: Int) {
-        let newNode = Node(value: value)
+        let newNode = LinkedListNode(value: value)
         insert(newNode, at: index)
     }
-    
     public func insert(_ newNode: Node, at index: Int) {
-        let prev = node(at: index - 1)
-        let next = prev.next
-        prev.next = newNode
-        newNode.next = next
-    }
-    
-    public func removeAll() {
-        head = nil
-    }
-    
-    @discardableResult public func remove(node: Node) -> T {
-        if head === node {
-            head!.next = node.next
+        if index == 0 {
+            newNode.next = head
+            head?.prev = newNode
+            head = newNode
         } else {
-            var prev = head
-            var pNode = head?.next
-            while let nd = pNode {
-                if nd === node {
-                    prev?.next = nd.next
-                    break
-                }
-                prev = nd
-                pNode = nd.next
-            }
+            let prev = node(at: index - 1)
+            let next = prev.next
+            newNode.prev = prev
+            newNode.next = next
+            prev.next = newNode
+            next?.prev = newNode
+            
         }
+    }
+    public func remove(at index: Int) -> T {
+        let node = self.node(at: index)
+        return remove(node)
+    }
+    public func remove(_ node: Node) -> T {
+        let prev = node.prev
+        let next = node.next
         
+        if let prev = prev {
+            prev.next = next
+        } else {
+            head = next
+        }
+        next?.prev = prev
+        
+        node.prev = nil
         node.next = nil
+        
         return node.value
     }
-    
-    @discardableResult public func removeLast() -> T {
+    public func removeLast() -> T {
         precondition(!isEmpty)
-        return remove(node: last!)
+        return remove(last!)
     }
-    
-    @discardableResult public func remove(at index: Int) -> T {
-        let node = self.node(at: index)
-        return remove(node: node)
+    public func removeAll() {
+        head = nil
     }
 }
 
@@ -151,14 +150,12 @@ extension LinkedList: CustomStringConvertible {
             s += "\(nd.value)"
             node = nd.next
             if node != nil {
-                s += ", "
+                s += ","
             }
         }
         return s + "]"
     }
 }
-
-
 
 // MARK: - Test Cases
 
@@ -197,5 +194,4 @@ list[1]
 list[2]
 
 list.node(at: 0).value = "Universe"
-
 

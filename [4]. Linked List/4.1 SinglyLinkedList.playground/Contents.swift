@@ -114,7 +114,7 @@ public final class LinkedList<T> {
     
     @discardableResult public func remove(node: Node) -> T {
         if head === node {
-            head!.next = node.next
+            head = node.next
         } else {
             var prev = head
             var pNode = head?.next
@@ -185,12 +185,17 @@ list.node(at: 1)
 list[0]
 list[1]
 
+print(list)
+list.remove(at: 0)
+print(list)
+
 let list2 = LinkedList<String>()
 list2.append("Goodbye")
 list2.append("World")
 list.append(list2)
 list2.removeAll()
 list.remove(at: 2)
+
 list.insert("Swift", at: 1)
 list[0]
 list[1]

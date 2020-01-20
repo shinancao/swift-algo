@@ -67,5 +67,5 @@ head --->  | node0 | ---> | node1 | ---> | node2 | ---> head
 4.2 | 实现非循环双向链表
 4.3 | 实现循环链表
 4.4 | [leetcode 206：反转链表](https://leetcode-cn.com/problems/reverse-linked-list/)
-4.5 | [leetcode 21: 合并两个有序链表](https://leetcode-cn.com/problems/merge-two-sorted-lists/)
+4.5 | [leetcode 21：合并两个有序链表](https://leetcode-cn.com/problems/merge-two-sorted-lists/)
 4.6 | [leetcode 876：链表的中间结点](https://leetcode-cn.com/problems/middle-of-the-linked-list/)

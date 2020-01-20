@@ -157,6 +157,18 @@ extension LinkedList: CustomStringConvertible {
     }
 }
 
+extension LinkedList {
+    // 双链表的翻转，即互换结点的next和prev指针
+    public func reverse() {
+        var node = head
+        while let currentNode = node {
+            node = currentNode.next
+            swap(&currentNode.next, &currentNode.prev)
+            head = currentNode
+        }
+    }
+}
+
 // MARK: - Test Cases
 
 let list = LinkedList<String>()

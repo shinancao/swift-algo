@@ -114,6 +114,6 @@ F   G           H  I  G  K  L  M  N  O        H I G
 8.1 | 实现树结构
 8.2 | 用Enum实现二叉树
 8.3 | 实现二叉查找树，及其相关的操作
-8.4 | 用Enme实现二叉查找树 
+8.4 | 用Enum实现二叉查找树 
 8.5 | [leetcode 104：二叉树的最大深度](https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/)
 
